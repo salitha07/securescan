@@ -1,15 +1,30 @@
 package com.example.securescan.service;
 
 import com.example.securescan.model.ScanResult;
+import com.example.securescan.repository.ScanHistoryRepository;
+import com.example.securescan.entity.ScanHistory;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.time.LocalDateTime;
+
+
+import com.example.securescan.entity.ScanHistory;
+import com.example.securescan.model.ScanResult;
+import com.example.securescan.repository.ScanHistoryRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
+import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
-
 @Service
 public class ScanService {
+    @Autowired
+    private ScanHistoryRepository scanHistoryRepository;
 
     public List<ScanResult> scanTarget(String target) {
 
@@ -51,6 +66,16 @@ public class ScanService {
                     results.add(
                             new ScanResult(port, state, service, version)
                     );
+                    ScanHistory history = new ScanHistory(
+                            target,
+                            port,
+                            state,
+                            service,
+                            version,
+                            LocalDateTime.now()
+                    );
+
+                    scanHistoryRepository.save(history);
                 }
             }
 
