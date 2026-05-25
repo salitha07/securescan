@@ -1,4 +1,19 @@
 package com.example.securescan.service;
+import org.w3c.dom.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import org.w3c.dom.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.securescan.model.ScanResult;
 import com.example.securescan.repository.ScanHistoryRepository;
@@ -22,17 +37,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 @Service
-public class ScanService {
-    @Autowired
+public class ScanService {@Autowired
     private ScanHistoryRepository scanHistoryRepository;
 
-    public List<ScanResult> scanTarget(String target) {
+    public List<ScanResult> scanTarget (String target){
 
         List<ScanResult> results = new ArrayList<>();
 
         try {
+
             ProcessBuilder processBuilder =
-                    new ProcessBuilder("nmap", "-sV", target);
+                    new ProcessBuilder("nmap", "-sV", "-oX", "-", target);
 
             Process process = processBuilder.start();
 
@@ -40,43 +55,85 @@ public class ScanService {
                     new InputStreamReader(process.getInputStream())
             );
 
+            StringBuilder xmlOutput = new StringBuilder();
+
             String line;
 
             while ((line = reader.readLine()) != null) {
+                xmlOutput.append(line);
+            }
 
-                if (line.contains("/tcp") || line.contains("/udp")) {
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
 
-                    String[] parts = line.trim().split("\\s+");
+            DocumentBuilder builder =
+                    factory.newDocumentBuilder();
 
-                    String port = parts.length > 0 ? parts[0] : "";
-                    String state = parts.length > 1 ? parts[1] : "";
-                    String service = parts.length > 2 ? parts[2] : "";
-                    String version = "";
-
-                    if (parts.length > 3) {
-                        StringBuilder versionBuilder = new StringBuilder();
-
-                        for (int i = 3; i < parts.length; i++) {
-                            versionBuilder.append(parts[i]).append(" ");
-                        }
-
-                        version = versionBuilder.toString().trim();
-                    }
-
-                    results.add(
-                            new ScanResult(port, state, service, version)
-                    );
-                    ScanHistory history = new ScanHistory(
-                            target,
-                            port,
-                            state,
-                            service,
-                            version,
-                            LocalDateTime.now()
+            Document document =
+                    builder.parse(
+                            new ByteArrayInputStream(
+                                    xmlOutput.toString()
+                                            .getBytes(StandardCharsets.UTF_8)
+                            )
                     );
 
-                    scanHistoryRepository.save(history);
-                }
+            document.getDocumentElement().normalize();
+
+            NodeList ports =
+                    document.getElementsByTagName("port");
+
+            for (int i = 0; i < ports.getLength(); i++) {
+
+                Element portElement =
+                        (Element) ports.item(i);
+
+                String port =
+                        portElement.getAttribute("portid");
+
+                Element stateElement =
+                        (Element) portElement
+                                .getElementsByTagName("state")
+                                .item(0);
+
+                String state =
+                        stateElement.getAttribute("state");
+
+                Element serviceElement =
+                        (Element) portElement
+                                .getElementsByTagName("service")
+                                .item(0);
+
+                String service =
+                        serviceElement.getAttribute("name");
+
+                String product =
+                        serviceElement.getAttribute("product");
+
+                String version =
+                        serviceElement.getAttribute("version");
+
+                String fullVersion =
+                        product + " " + version;
+
+                results.add(
+                        new ScanResult(
+                                port,
+                                state,
+                                service,
+                                fullVersion
+                        )
+                );
+
+                ScanHistory history = new ScanHistory(
+                        target,
+                        port,
+                        state,
+                        service,
+                        fullVersion,
+                        LocalDateTime.now()
+                );
+
+                scanHistoryRepository.save(history);
             }
 
             process.waitFor();
