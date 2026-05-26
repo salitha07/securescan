@@ -1,6 +1,11 @@
 package com.example.securescan.model;
+import lombok.Setter;
+
+import java.util.List;
 
 public class ScanResult {
+    @Setter
+    private List<CveResult> cves;
 
     private String port;
     private String state;
@@ -29,4 +34,8 @@ public class ScanResult {
     public String getVersion() {
         return version;
     }
+    public List<CveResult> getCves() {
+        return cves;
+    }
+
 }

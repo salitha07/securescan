@@ -1,4 +1,5 @@
 package com.example.securescan.service;
+import com.example.securescan.model.CveResult;
 import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,8 +38,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 @Service
-public class ScanService {@Autowired
+public class ScanService {
+    @Autowired
     private ScanHistoryRepository scanHistoryRepository;
+    @Autowired
+    private CveService cveService;
 
     public List<ScanResult> scanTarget (String target){
 
@@ -114,15 +118,20 @@ public class ScanService {@Autowired
 
                 String fullVersion =
                         product + " " + version;
+                List<CveResult> cves =
+                        cveService.searchCves(fullVersion);
 
-                results.add(
+                ScanResult scanResult =
                         new ScanResult(
                                 port,
                                 state,
                                 service,
                                 fullVersion
-                        )
-                );
+                        );
+
+                scanResult.setCves(cves);
+
+                results.add(scanResult);
 
                 ScanHistory history = new ScanHistory(
                         target,
