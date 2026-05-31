@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class user {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,4 +22,8 @@ public class user {
     private String password;
 
     private String role;
+
+    public boolean isPresent() {
+        return false;
+    }
 }

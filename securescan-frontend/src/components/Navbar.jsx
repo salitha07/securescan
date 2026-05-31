@@ -15,7 +15,7 @@ function Navbar() {
                 <div className="flex gap-6">
 
                     <Link
-                        to="/"
+                        to="/home"
                         className="hover:text-blue-400"
                     >
                         Home
