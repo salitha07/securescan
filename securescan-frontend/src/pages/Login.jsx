@@ -1,20 +1,42 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import bgImage from "../assets/bg2.jpg";
 
+
 function Login() {
+
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
 
-        console.log({
-            email,
-            password
-        });
+        try {
 
-        // Login API will go here later
+            await axios.post(
+                "http://localhost:8080/auth/login",
+                {
+                    email,
+                    password
+                }
+            );
+
+            setError("");
+
+            navigate("/");
+
+        } catch (err) {
+
+            setError(
+                err.response?.data || "Login failed"
+            );
+        }
+
+
     };
 
     return (
@@ -50,14 +72,17 @@ function Login() {
                                 type="email"
                                 placeholder="Enter email"
                                 value={email}
-                                onChange={(e) =>
-                                    setEmail(e.target.value)
-                                }
-                                className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={(e) => setEmail(e.target.value)}
+                                className={`w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2
+                                ${
+                                    error
+                                        ? "border border-red-500 focus:ring-red-500"
+                                        : "border border-white/20 focus:ring-blue-500"
+                                }`}
                             />
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-4">
                             <label className="block text-gray-200 mb-2">
                                 Password
                             </label>
@@ -66,12 +91,21 @@ function Login() {
                                 type="password"
                                 placeholder="Enter password"
                                 value={password}
-                                onChange={(e) =>
-                                    setPassword(e.target.value)
-                                }
-                                className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={(e) => setPassword(e.target.value)}
+                                className={`w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2
+                                ${
+                                    error
+                                        ? "border border-red-500 focus:ring-red-500"
+                                        : "border border-white/20 focus:ring-blue-500"
+                                }`}
                             />
                         </div>
+
+                        {error && (
+                            <div className="mb-4 bg-red-500/20 border border-red-500 text-red-300 p-3 rounded-lg">
+                                {error}
+                            </div>
+                        )}
 
                         <button
                             type="submit"
