@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import bgImage from "../assets/bg2.jpg";
+import bgImage from "../assets/bg2.avif";
 
 
 function Login() {
@@ -24,17 +24,17 @@ function Login() {
                     password
                 }
             );
-
             setError("");
-
-            navigate("/");
+            setEmail("");
+            navigate("/home");
 
         } catch (err) {
 
             setError(
                 err.response?.data || "Login failed"
             );
-        }
+
+    };
 
 
     };
@@ -95,10 +95,12 @@ function Login() {
                                 className={`w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2
                                 ${
                                     error
-                                        ? "border border-red-500 focus:ring-red-500"
-                                        : "border border-white/20 focus:ring-blue-500"
+                                        ? "border border-red-500 "
+                                        : "border border-white/20 "
                                 }`}
                             />
+
+                            )
                         </div>
 
                         {error && (

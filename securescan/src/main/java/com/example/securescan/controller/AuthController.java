@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 
 @RestController
@@ -38,22 +40,27 @@ public class AuthController {
         return "User registered successfully!";
     }
     @PostMapping("/login")
-    public String loginUser(@RequestBody User user) {
+    public ResponseEntity<String> loginUser(@RequestBody User user) {
 
         User existingUser =
                 userRepository.findByEmail(user.getEmail());
 
         if (existingUser == null) {
-            return "User not found";
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("User not found");
         }
 
         if (!passwordEncoder.matches(
                 user.getPassword(),
                 existingUser.getPassword()
         )) {
-            return "Invalid password";
+
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid password");
         }
 
-        return "Login successful";
+        return ResponseEntity.ok("Login successful");
     }
 }
