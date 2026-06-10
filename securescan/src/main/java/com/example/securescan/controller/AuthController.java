@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 @CrossOrigin (origins= "http://localhost:5173")
 public class AuthController {
 
+
     @Autowired
     private JwtService jwtService;
     @Autowired

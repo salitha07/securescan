@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import bgImage from "../assets/homebg.jpg";
+import { useEffect } from "react";
 
 function Home() {
 
@@ -12,6 +13,14 @@ function Home() {
     const navigate = useNavigate();
 
     const handleScan = async () => {
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            alert("Please login first");
+            navigate("/login");
+            return;
+        }
 
         if (!target) {
             alert("Enter IP or domain");
@@ -23,7 +32,12 @@ function Home() {
             setLoading(true);
 
             const response = await axios.get(
-                `http://localhost:8080/scan?target=${target}`
+                `http://localhost:8080/scan?target=${target}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
             );
 
             navigate("/results", {
@@ -43,6 +57,14 @@ function Home() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            navigate("/login");
+        }
+    }, [navigate]);
 
     return (
 
