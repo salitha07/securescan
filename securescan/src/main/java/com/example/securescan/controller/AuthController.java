@@ -2,6 +2,7 @@ package com.example.securescan.controller;
 
 import com.example.securescan.entity.User;
 import com.example.securescan.repository.UserRepository;
+import com.example.securescan.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 @CrossOrigin (origins= "http://localhost:5173")
 public class AuthController {
 
+    @Autowired
+    private JwtService jwtService;
     @Autowired
     private UserRepository userRepository;
 
@@ -61,6 +64,11 @@ public class AuthController {
                     .body("Invalid password");
         }
 
-        return ResponseEntity.ok("Login successful");
+        String token =
+                jwtService.generateToken(
+                        existingUser.getEmail()
+                );
+
+        return ResponseEntity.ok(token);
     }
 }

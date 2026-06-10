@@ -13,31 +13,44 @@ function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+
     const handleLogin = async (e) => {
         e.preventDefault();
 
         try {
 
-            await axios.post(
+            const response = await axios.post(
                 "http://localhost:8080/auth/login",
                 {
                     email,
                     password
                 }
             );
+
+            const token = response.data;
+
+            localStorage.setItem(
+                "token",
+                token
+            );
+            console.log(response.data);
+
             setError("");
             setEmail("");
+            setPassword("");
+
             navigate("/home");
 
         } catch (err) {
 
+            console.error(err);
+
             setError(
-                err.response?.data || "Login failed"
+                err.response?.data?.error ||
+                err.response?.data?.message ||
+                "Login failed"
             );
-
-    };
-
-
+        }
     };
 
     return (
@@ -68,7 +81,7 @@ function Login() {
 
                     <form onSubmit={handleLogin}>
 
-                        <div className="mb-3">
+                        <div className="mb-3-">
                             <label className="block text-gray-200 mb-2">
                                 Email
                             </label>
