@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import bgImage from "../assets/homebg.jpg";
+import bgImage from "../assets/bacg.jpg";
 import logo from "../assets/logo.webp";
 
 function LandingPage() {
