@@ -5,6 +5,7 @@ import Results from "./pages/Results";
 import History from "./pages/History";
 import Register from "./pages/Register.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
 
@@ -14,14 +15,15 @@ function App() {
         <BrowserRouter>
 
             <Routes>
-                <Route path="/" element={<Login/>} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/login" element={<Login/>} />
 
                 <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
 
                 <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
 
                 <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
-                <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
+                <Route path="/register" element={<Register />} />
 
             </Routes>
 

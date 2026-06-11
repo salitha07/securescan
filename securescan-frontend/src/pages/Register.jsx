@@ -131,7 +131,7 @@ function Register() {
                         </p>
 
                         <Link
-                            to="/"
+                            to="/login"
                             className="text-blue-400 hover:text-blue-300 font-semibold"
                         >
                             Sign In
