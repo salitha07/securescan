@@ -5,12 +5,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+
 @Service
 public class JwtService {
+
+
 
     private static final String SECRET =
             "myVerySecretSecureScanKey123456myVerySecretSecureScanKey123456";

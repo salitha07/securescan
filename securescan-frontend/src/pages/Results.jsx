@@ -56,106 +56,104 @@ function Results() {
 
                     <div className="overflow-x-auto">
 
-                        <table className="w-full border-collapse bg-white/10 backdrop-blur-md rounded-xl overflow-hidden">
-
-                            <thead className="bg-black/40 text-white">
-
-                            <tr>
-                                <th className="p-3 text-left">Port</th>
-                                <th className="p-3 text-left">State</th>
-                                <th className="p-3 text-left">Service</th>
-                                <th className="p-3 text-left">Version</th>
-                            </tr>
-
-                            </thead>
-
-                            <tbody>
+                        <div className="space-y-6">
 
                             {results.map((result, index) => (
 
-                                <tr
+                                <div
                                     key={index}
-                                    className="border-b border-white/10 hover:bg-white/10 transition"
+                                    className="bg-slate-900/80 border border-slate-700 rounded-xl p-6"
                                 >
 
-                                    <td className="p-3">
-                                        {result.port}
-                                    </td>
+                                    <div className="flex justify-between items-start">
 
-                                    <td className="p-3">
+                                        <div>
+
+                                            <h2 className="text-2xl font-bold">
+                                                Port {result.port}
+                                            </h2>
+
+                                            <p className="text-slate-400">
+                                                {result.service}
+                                            </p>
+
+                                            <p className="text-slate-400">
+                                                {result.version}
+                                            </p>
+
+                                        </div>
 
                                         <span
                                             className={
                                                 result.state === "open"
-                                                    ? "text-green-600 font-bold"
-                                                    : "text-red-600 font-bold"
+                                                    ? "bg-green-600 px-3 py-1 rounded-full text-sm"
+                                                    : "bg-red-600 px-3 py-1 rounded-full text-sm"
                                             }
                                         >
-                                            {result.state}
-                                        </span>
+                    {result.state}
+                </span>
 
-                                    </td>
+                                    </div>
 
-                                    <td className="p-3">
-                                        {result.service}
-                                    </td>
+                                    <div className="mt-6">
 
-                                    <td className="p-3">
-                                        {result.version}
-                                        <div className="mt-4">
+                                        <h3 className="text-lg font-semibold mb-3">
+                                            Vulnerabilities
+                                        </h3>
 
-                                            <h3 className="text-xl font-bold mb-2">
-                                                Vulnerabilities
-                                            </h3>
+                                        {result.cves?.length > 0 ? (
 
-                                            {result.cves && result.cves.length > 0 ? (
+                                            result.cves.map((cve, i) => (
 
-                                                result.cves.map((cve, index) => (
+                                                <div
+                                                    key={i}
+                                                    className="bg-slate-800 border border-slate-600 rounded-lg p-4 mb-3"
+                                                >
 
-                                                    <div
-                                                        key={index}
-                                                        className="bg-red-950/40 border border-red-500 p-4 rounded-lg mb-3"
-                                                    >
+                                                    <div className="flex justify-between">
 
-                                                        <p className="font-bold text-red-400">
-                                                            {cve.cveId}
-                                                        </p>
+                                <span className="font-bold text-red-400">
+                                    {cve.cveId}
+                                </span>
 
-                                                        <p className={
-                                                            cve.severity === "CRITICAL"
-                                                                ? "text-red-500 font-bold"
-                                                                : cve.severity === "HIGH"
-                                                                    ? "text-orange-400 font-bold"
-                                                                    : cve.severity === "MEDIUM"
-                                                                        ? "text-yellow-400 font-bold"
-                                                                        : "text-green-400 font-bold"
-                                                        }>
-                                                            Severity: {cve.severity}
-                                                        </p>
-
-                                                        <p className="text-gray-300 mt-2">
-                                                            {cve.description}
-                                                        </p>
+                                                        <span
+                                                            className={
+                                                                cve.severity === "CRITICAL"
+                                                                    ? "text-red-500 font-bold"
+                                                                    : cve.severity === "HIGH"
+                                                                        ? "text-orange-400 font-bold"
+                                                                        : cve.severity === "MEDIUM"
+                                                                            ? "text-yellow-400 font-bold"
+                                                                            : "text-green-400 font-bold"
+                                                            }
+                                                        >
+                                    {cve.severity}
+                                </span>
 
                                                     </div>
-                                                ))
 
-                                            ) : (
+                                                    <p className="text-slate-300 mt-2">
+                                                        {cve.description}
+                                                    </p>
 
-                                                <p className="text-green-400">
-                                                    No known vulnerabilities found.
-                                                </p>
-                                            )}
+                                                </div>
+                                            ))
 
-                                        </div>
-                                    </td>
+                                        ) : (
 
-                                </tr>
+                                            <div className="bg-green-900/20 border border-green-700 rounded-lg p-4">
+                                                No known vulnerabilities found
+                                            </div>
+
+                                        )}
+
+                                    </div>
+
+                                </div>
+
                             ))}
 
-                            </tbody>
-
-                        </table>
+                        </div>
 
                     </div>
                 )}
