@@ -1,7 +1,10 @@
 package com.example.securescan.entity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class ScanHistory {
@@ -35,6 +38,22 @@ public class ScanHistory {
         this.version = version;
         this.scanDate = scanDate;
     }
+    @lombok.Setter
+    @lombok.Getter
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @JsonManagedReference
+    @OneToMany(
+            mappedBy = "scanHistory",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER
+    )
+
+
+    private List<Vulnerability> vulnerabilities = new ArrayList<>();
+
 
     public Long getId() {
         return id;
@@ -63,4 +82,8 @@ public class ScanHistory {
     public LocalDateTime getScanDate() {
         return scanDate;
     }
+    public List<Vulnerability> getVulnerabilities() {
+        return vulnerabilities;
+    }
+
 }

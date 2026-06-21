@@ -1,5 +1,7 @@
 package com.example.securescan.service;
 import com.example.securescan.model.CveResult;
+import com.example.securescan.entity.User;
+import com.example.securescan.repository.UserRepository;
 import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,6 +23,8 @@ import com.example.securescan.repository.ScanHistoryRepository;
 import com.example.securescan.entity.ScanHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
+import com.example.securescan.entity.Vulnerability;
+import com.example.securescan.repository.VulnerabilityRepository;
 
 
 import com.example.securescan.entity.ScanHistory;
@@ -37,18 +41,35 @@ import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 @Service
 public class ScanService {
+    @Autowired
+    private VulnerabilityRepository vulnerabilityRepository;
     @Autowired
     private ScanHistoryRepository scanHistoryRepository;
     @Autowired
     private CveService cveService;
+    @Autowired
+    private UserRepository userRepository;
+
 
     public List<ScanResult> scanTarget (String target){
 
         List<ScanResult> results = new ArrayList<>();
 
         try {
+            Authentication authentication =
+                    SecurityContextHolder.getContext().getAuthentication();
+
+            String email = authentication.getName();
+
+            User user = userRepository.findByEmail(email);
+
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
 
             ProcessBuilder processBuilder =
                     new ProcessBuilder("nmap", "-sV", "-oX", "-", target);
@@ -141,6 +162,24 @@ public class ScanService {
                         fullVersion,
                         LocalDateTime.now()
                 );
+
+                history = scanHistoryRepository.save(history);
+
+                if (cves != null && !cves.isEmpty()) {
+
+                    for (CveResult cve : cves) {
+
+                        Vulnerability vulnerability = new Vulnerability();
+
+                        vulnerability.setCveId(cve.getCveId());
+                        vulnerability.setDescription(cve.getDescription());
+                        vulnerability.setSeverity(cve.getSeverity());
+
+                        vulnerability.setScanHistory(history);
+
+                        vulnerabilityRepository.save(vulnerability);
+                    }
+                }
 
                 scanHistoryRepository.save(history);
             }

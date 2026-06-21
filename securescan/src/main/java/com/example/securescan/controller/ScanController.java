@@ -1,4 +1,8 @@
 package com.example.securescan.controller;
+import com.example.securescan.entity.User;
+import com.example.securescan.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.example.securescan.entity.ScanHistory;
 import com.example.securescan.model.ScanResult;
@@ -19,6 +23,8 @@ public class ScanController {
 
     @Autowired
     private ScanService scanService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ScanHistoryRepository scanHistoryRepository;
@@ -30,6 +36,18 @@ public class ScanController {
 
     @GetMapping("/history")
     public List<ScanHistory> getScanHistory() {
-        return scanHistoryRepository.findAll();
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        return scanHistoryRepository.findByUser(user);
     }
 }

@@ -28,7 +28,7 @@ function Results() {
                 <div className="flex justify-between items-center mb-6" >
 
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-800">
+                        <h1 className="text-4xl font-bold text-shadow-white">
                             Scan Results
                         </h1>
 
@@ -38,7 +38,7 @@ function Results() {
                     </div>
 
                     <button
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/home")}
                         className="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-800"
                     >
                         Back
