@@ -1,65 +1,53 @@
 package com.example.securescan.service;
-import com.example.securescan.model.CveResult;
-import com.example.securescan.entity.User;
-import com.example.securescan.repository.UserRepository;
-import org.w3c.dom.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import org.w3c.dom.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
+import com.example.securescan.entity.ScanHistory;
+import com.example.securescan.entity.User;
+import com.example.securescan.entity.Vulnerability;
+import com.example.securescan.model.CveResult;
 import com.example.securescan.model.ScanResult;
 import com.example.securescan.repository.ScanHistoryRepository;
-import com.example.securescan.entity.ScanHistory;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.time.LocalDateTime;
-import com.example.securescan.entity.Vulnerability;
+import com.example.securescan.repository.UserRepository;
 import com.example.securescan.repository.VulnerabilityRepository;
 
-
-import com.example.securescan.entity.ScanHistory;
-import com.example.securescan.model.ScanResult;
-import com.example.securescan.repository.ScanHistoryRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
-import java.time.LocalDateTime;
-
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import org.w3c.dom.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ScanService {
-    @Autowired
-    private VulnerabilityRepository vulnerabilityRepository;
+
     @Autowired
     private ScanHistoryRepository scanHistoryRepository;
+
     @Autowired
-    private CveService cveService;
+    private VulnerabilityRepository vulnerabilityRepository;
+
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CveService cveService;
 
-    public List<ScanResult> scanTarget (String target){
+    public List<ScanResult> scanTarget(String target) {
 
         List<ScanResult> results = new ArrayList<>();
 
         try {
+
+            // Get logged-in user
             Authentication authentication =
                     SecurityContextHolder.getContext().getAuthentication();
 
@@ -139,9 +127,11 @@ public class ScanService {
 
                 String fullVersion =
                         product + " " + version;
+
                 List<CveResult> cves =
                         cveService.searchCves(fullVersion);
 
+                // Response object
                 ScanResult scanResult =
                         new ScanResult(
                                 port,
@@ -154,6 +144,7 @@ public class ScanService {
 
                 results.add(scanResult);
 
+                // Save scan history
                 ScanHistory history = new ScanHistory(
                         target,
                         port,
@@ -163,13 +154,17 @@ public class ScanService {
                         LocalDateTime.now()
                 );
 
+                history.setUser(user);
+
                 history = scanHistoryRepository.save(history);
 
+                // Save vulnerabilities
                 if (cves != null && !cves.isEmpty()) {
 
                     for (CveResult cve : cves) {
 
-                        Vulnerability vulnerability = new Vulnerability();
+                        Vulnerability vulnerability =
+                                new Vulnerability();
 
                         vulnerability.setCveId(cve.getCveId());
                         vulnerability.setDescription(cve.getDescription());
@@ -180,8 +175,6 @@ public class ScanService {
                         vulnerabilityRepository.save(vulnerability);
                     }
                 }
-
-                scanHistoryRepository.save(history);
             }
 
             process.waitFor();
