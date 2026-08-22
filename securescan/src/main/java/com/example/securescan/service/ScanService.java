@@ -1,5 +1,6 @@
 package com.example.securescan.service;
-
+import com.example.securescan.model.PingResult;
+import com.example.securescan.service.PingService;
 import com.example.securescan.entity.ScanHistory;
 import com.example.securescan.entity.User;
 import com.example.securescan.entity.Vulnerability;
@@ -48,11 +49,28 @@ public class ScanService {
     @Autowired
     private ScanProgressService scanProgressService;
 
+    @Autowired
+    private PingService pingService;
+
+    @Autowired
+    private PingService PingService;
+
     // store results by scanId so controller can fetch them after scan
     private final Map<String, List<ScanResult>> scanResults = new ConcurrentHashMap<>();
 
     public void scanAsync(String scanId, String target, String email) {
-        try {
+        try {emit(scanId, ScanStatus.SCANNING_PORTS, "Checking host availability...", 5);
+            PingResult ping = pingService.ping(target);
+
+            if (!ping.isReachable()) {
+                emit(scanId, ScanStatus.FAILED,
+                        "Host " + target + " is unreachable — scan aborted", 0);
+                scanProgressService.complete(scanId);
+                return;
+            }
+
+            emit(scanId, ScanStatus.SCANNING_PORTS,
+                    "Host is ONLINE (" + ping.getResponseTimeMs() + "ms) — starting port scan...", 10);
             emit(scanId, ScanStatus.SCANNING_PORTS, "Starting Nmap scan on " + target, 10);
 
             User user = userRepository.findByEmail(email);
