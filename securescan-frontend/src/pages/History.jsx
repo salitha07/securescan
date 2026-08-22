@@ -1,250 +1,282 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
-import bgImage from "../assets/bg2.jpg";
 
-// ── Group flat list into { target, date, ports[] } ──────────────────────────
+const styles = `
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #060B18; font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+.hist-root { min-height: 100vh; background: #060B18; padding: 100px 24px 60px; }
+.hist-inner { max-width: 900px; margin: 0 auto; }
+
+.hist-header { margin-bottom: 28px; }
+.hist-title { font-size: 30px; font-weight: 800; color: #F1F5F9; letter-spacing: -0.025em; }
+.hist-sub { font-size: 14px; color: #475569; margin-top: 6px; }
+
+/* Stats row */
+.hist-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.hstat {
+    background: rgba(14,21,40,0.8); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px; padding: 16px 18px;
+}
+.hstat-label { font-size: 11px; font-weight: 600; color: #475569; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 6px; }
+.hstat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+
+/* Search */
+.hist-search-wrap { position: relative; margin-bottom: 24px; }
+.hist-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #334155; font-size: 15px; pointer-events: none; }
+.hist-search {
+    width: 100%; padding: 12px 14px 12px 40px;
+    background: rgba(14,21,40,0.8); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px; color: #E2E8F0; font-size: 14px;
+    outline: none; font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.hist-search::placeholder { color: #1E293B; }
+.hist-search:focus { border-color: rgba(0,229,255,0.25); box-shadow: 0 0 0 3px rgba(0,229,255,0.05); }
+
+/* Scan group card */
+.scan-group {
+    background: rgba(14,21,40,0.7); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 18px; margin-bottom: 16px; overflow: hidden;
+    transition: border-color 0.2s;
+}
+.scan-group:hover { border-color: rgba(0,229,255,0.12); }
+.scan-group-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; }
+.scan-group-target { font-size: 16px; font-weight: 700; color: #00E5FF; font-family: 'JetBrains Mono', monospace; }
+.scan-group-date { font-size: 12px; color: #334155; margin-top: 4px; }
+.scan-group-badges { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+.gbadge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.gbadge-neutral { background: rgba(255,255,255,0.05); color: #64748B; border: 1px solid rgba(255,255,255,0.07); }
+.gbadge-green   { background: rgba(16,185,129,0.1);  color: #34D399;  border: 1px solid rgba(16,185,129,0.2); }
+.gbadge-red     { background: rgba(239,68,68,0.1);   color: #F87171;  border: 1px solid rgba(239,68,68,0.2); }
+
+/* Port rows inside group */
+.scan-group-ports { border-top: 1px solid rgba(255,255,255,0.05); padding: 12px 24px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+.port-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 12px 16px; border-radius: 12px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+    transition: border-color 0.2s;
+}
+.port-row:hover { border-color: rgba(255,255,255,0.1); }
+.port-row-left { display: flex; align-items: center; gap: 14px; }
+.port-box {
+    background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.12);
+    border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 58px;
+}
+.port-box-label { font-size: 9px; color: #334155; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.port-box-num { font-size: 16px; font-weight: 800; color: #00E5FF; font-family: 'JetBrains Mono', monospace; line-height: 1.2; }
+.port-info-name { font-size: 14px; font-weight: 600; color: #CBD5E1; }
+.port-info-ver { font-size: 11px; color: #334155; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.port-row-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+.pbadge { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.pbadge-open   { background: rgba(16,185,129,0.1); color: #34D399; border: 1px solid rgba(16,185,129,0.2); }
+.pbadge-closed { background: rgba(239,68,68,0.08); color: #F87171; border: 1px solid rgba(239,68,68,0.15); }
+.pbadge-vuln   { background: rgba(239,68,68,0.1);  color: #F87171; border: 1px solid rgba(239,68,68,0.2); cursor: pointer; }
+.pbadge-clean  { background: rgba(16,185,129,0.07);color: #6EE7B7; border: 1px solid rgba(16,185,129,0.12); }
+
+/* CVE inline */
+.vuln-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.vuln-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 10px 12px; border-radius: 8px; border-left: 2px solid; }
+.vr-CRITICAL { background: rgba(239,68,68,0.06); border-color: #EF4444; }
+.vr-HIGH     { background: rgba(249,115,22,0.06); border-color: #F97316; }
+.vr-MEDIUM   { background: rgba(234,179,8,0.06);  border-color: #EAB308; }
+.vr-LOW      { background: rgba(16,185,129,0.06); border-color: #10B981; }
+.vuln-id { font-size: 12px; font-weight: 700; color: #E2E8F0; font-family: 'JetBrains Mono', monospace; }
+.vuln-desc { font-size: 11px; color: #64748B; margin-top: 3px; line-height: 1.5; }
+.vuln-sev { padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.vs-CRITICAL { background: rgba(239,68,68,0.2);  color: #FCA5A5; }
+.vs-HIGH     { background: rgba(249,115,22,0.2); color: #FDBA74; }
+.vs-MEDIUM   { background: rgba(234,179,8,0.2);  color: #FDE047; }
+.vs-LOW      { background: rgba(16,185,129,0.2); color: #6EE7B7; }
+
+.hist-empty { text-align: center; padding: 70px 20px; background: rgba(14,21,40,0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; }
+.hist-empty h3 { font-size: 20px; font-weight: 700; color: #E2E8F0; margin-bottom: 8px; }
+.hist-empty p { font-size: 14px; color: #475569; }
+
+.hist-loading { text-align: center; padding: 60px; color: #334155; font-size: 14px; }
+`;
+
 function groupScans(list) {
     const groups = {};
-
     list.forEach(item => {
-        const date = new Date(item.scanDate).toLocaleDateString("en-US", {
-            year: "numeric", month: "long", day: "numeric"
-        });
+        const date = new Date(item.scanDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
         const key = `${item.target}__${date}`;
-
-        if (!groups[key]) {
-            groups[key] = { target: item.target, date, ports: [] };
-        }
+        if (!groups[key]) groups[key] = { target: item.target, date, ports: [] };
         groups[key].ports.push(item);
     });
-
-    return Object.values(groups).sort(
-        (a, b) => new Date(b.ports[0].scanDate) - new Date(a.ports[0].scanDate)
-    );
+    return Object.values(groups).sort((a, b) => new Date(b.ports[0].scanDate) - new Date(a.ports[0].scanDate));
 }
 
-// ── Single port row (expandable vulnerabilities) ─────────────────────────────
-function PortRow({ item }) {
+function PortRowItem({ item }) {
     const [open, setOpen] = useState(false);
     const vulns = item.vulnerabilities ?? [];
-
-    const severityBorder = { CRITICAL: "border-red-500", HIGH: "border-orange-400", MEDIUM: "border-yellow-400" };
-    const severityText   = { CRITICAL: "text-red-400",   HIGH: "text-orange-400",   MEDIUM: "text-yellow-400" };
-    const severityBadge  = { CRITICAL: "bg-red-900/40 text-red-400", HIGH: "bg-orange-900/40 text-orange-400", MEDIUM: "bg-yellow-900/40 text-yellow-400" };
-
     return (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-
-            {/* Row header */}
-            <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4">
-
-                    {/* Port box */}
-                    <div className="bg-black/30 rounded-lg px-3 py-2 text-center min-w-[64px]">
-                        <p className="text-gray-400 text-xs">PORT</p>
-                        <p className="text-white font-bold text-lg leading-tight">{item.port}</p>
+        <div>
+            <div className="port-row">
+                <div className="port-row-left">
+                    <div className="port-box">
+                        <div className="port-box-label">port</div>
+                        <div className="port-box-num">{item.port}</div>
                     </div>
-
-                    {/* Service + version */}
                     <div>
-                        <p className="text-white font-semibold">{item.service}</p>
-                        <p className="text-gray-400 text-sm">{item.version || "Unknown version"}</p>
+                        <div className="port-info-name">{item.service}</div>
+                        <div className="port-info-ver">{item.version || "version unknown"}</div>
                     </div>
                 </div>
-
-                <div className="flex items-center gap-2">
-                    {/* State badge */}
-                    <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                        item.state === "open"
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-red-500/20 text-red-400"
-                    }`}>
+                <div className="port-row-right">
+                    <span className={`pbadge ${item.state === "open" ? "pbadge-open" : "pbadge-closed"}`}>
                         {item.state}
                     </span>
-
-                    {/* Vuln toggle — only shown if vulns exist */}
-                    {vulns.length > 0 && (
-                        <button
-                            onClick={() => setOpen(!open)}
-                            className="text-xs font-semibold px-3 py-1 rounded-full bg-red-900/30 text-red-400 hover:bg-red-900/50 transition"
-                        >
+                    {vulns.length > 0 ? (
+                        <span className="pbadge pbadge-vuln" onClick={() => setOpen(!open)}>
                             {vulns.length} vuln{vulns.length > 1 ? "s" : ""} {open ? "▲" : "▼"}
-                        </button>
+                        </span>
+                    ) : (
+                        <span className="pbadge pbadge-clean">clean</span>
                     )}
                 </div>
             </div>
 
-            {/* Vulnerabilities (expanded) */}
-            {open && (
-                <div className="mt-4 border-t border-white/10 pt-4 space-y-3">
-                    {vulns.map((vuln, i) => (
-                        <div
-                            key={i}
-                            className={`bg-red-950/20 rounded-xl p-4 border-l-4 ${severityBorder[vuln.severity] ?? "border-gray-500"}`}
-                        >
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-white font-bold text-sm">{vuln.cveId}</span>
-                                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${severityBadge[vuln.severity] ?? "bg-gray-700 text-gray-300"}`}>
-                                    {vuln.severity}
-                                </span>
-                            </div>
-                            <p className={`text-xs font-semibold mb-1 ${severityText[vuln.severity] ?? "text-gray-400"}`}>
-                                {vuln.severity}
-                            </p>
-                            <p className="text-gray-300 text-sm leading-relaxed">{vuln.description}</p>
+            <AnimatePresence>
+                {open && vulns.length > 0 && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        style={{ overflow: "hidden", paddingLeft: 16 }}
+                    >
+                        <div className="vuln-list">
+                            {vulns.map((v, i) => (
+                                <div key={i} className={`vuln-row vr-${v.severity || "LOW"}`}>
+                                    <div>
+                                        <div className="vuln-id">{v.cveId}</div>
+                                        <div className="vuln-desc">{v.description}</div>
+                                    </div>
+                                    <span className={`vuln-sev vs-${v.severity}`}>{v.severity}</span>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-            )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
 
-// ── One scan group (target + date) ───────────────────────────────────────────
-function ScanGroup({ group }) {
-    const totalVulns = group.ports.reduce((sum, p) => sum + (p.vulnerabilities?.length ?? 0), 0);
+function ScanGroup({ group, index }) {
+    const totalVulns = group.ports.reduce((s, p) => s + (p.vulnerabilities?.length ?? 0), 0);
     const openCount  = group.ports.filter(p => p.state === "open").length;
 
     return (
-        <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:border-cyan-500/50 transition">
-
-            {/* Group header */}
-            <div className="flex justify-between items-start mb-5">
+        <motion.div
+            className="scan-group"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+        >
+            <div className="scan-group-header">
                 <div>
-                    <h2 className="text-2xl font-bold text-cyan-400">{group.target}</h2>
-                    <p className="text-gray-400 text-sm mt-1">{group.date}</p>
+                    <div className="scan-group-target">{group.target}</div>
+                    <div className="scan-group-date">{group.date}</div>
                 </div>
-
-                <div className="flex gap-2 flex-wrap justify-end">
-                    <span className="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300">
-                        {group.ports.length} port{group.ports.length > 1 ? "s" : ""}
-                    </span>
-                    <span className="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-400">
-                        {openCount} open
-                    </span>
-                    {totalVulns > 0 && (
-                        <span className="text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-400">
-                            {totalVulns} vuln{totalVulns > 1 ? "s" : ""}
-                        </span>
-                    )}
+                <div className="scan-group-badges">
+                    <span className="gbadge gbadge-neutral">{group.ports.length} port{group.ports.length !== 1 ? "s" : ""}</span>
+                    <span className="gbadge gbadge-green">{openCount} open</span>
+                    {totalVulns > 0 && <span className="gbadge gbadge-red">{totalVulns} vuln{totalVulns !== 1 ? "s" : ""}</span>}
                 </div>
             </div>
-
-            {/* Port rows */}
-            <div className="space-y-3">
-                {group.ports.map(item => (
-                    <PortRow key={item.id} item={item} />
-                ))}
+            <div className="scan-group-ports">
+                {group.ports.map(item => <PortRowItem key={item.id} item={item} />)}
             </div>
-        </div>
+        </motion.div>
     );
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
 function History() {
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
 
     useEffect(() => {
-        const fetchHistory = async () => {
+        (async () => {
             try {
                 const token = localStorage.getItem("token");
-                const response = await axios.get(
-                    "http://localhost:8080/scan/history",
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-
-                // ✅ Safely handle both plain array and wrapped responses
-                const data = response.data;
-                const arr = Array.isArray(data)
-                    ? data
-                    : data.content ?? data.data ?? [];
-
-                console.log("First item:", arr[0]); // remove after confirming it works
-                setHistory(arr);
-
-            } catch (error) {
-                console.error("Failed to fetch history:", error);
+                const res = await axios.get("http://localhost:8080/scan/history", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const data = res.data;
+                setHistory(Array.isArray(data) ? data : data.content ?? data.data ?? []);
+            } catch (e) {
+                console.error("Failed to fetch history:", e);
             } finally {
                 setLoading(false);
             }
-        };
-
-        fetchHistory();
+        })();
     }, []);
 
-    const filtered = history.filter(scan =>
-        scan.target?.toLowerCase().includes(search.toLowerCase())
-    );
-
-    const groups = groupScans(filtered);
+    const filtered = history.filter(s => s.target?.toLowerCase().includes(search.toLowerCase()));
+    const groups   = groupScans(filtered);
+    const openCount = history.filter(i => i.state === "open").length;
+    const targets   = new Set(history.map(i => i.target)).size;
+    const vulnCount = history.reduce((s, i) => s + (i.vulnerabilities?.length ?? 0), 0);
 
     return (
         <>
+            <style>{styles}</style>
             <Navbar />
+            <div className="hist-root">
+                <div className="hist-inner">
 
-            <div
-                className="min-h-screen bg-cover bg-center"
-                style={{ backgroundImage: `url(${bgImage})` }}
-            >
-                <div className="min-h-screen bg-black/80 pt-24 px-6 pb-10">
-                    <div className="max-w-4xl mx-auto">
+                    <div className="hist-header">
+                        <h1 className="hist-title">Scan history</h1>
+                        <p className="hist-sub">Review and track previous vulnerability scans</p>
+                    </div>
 
-                        {/* Header */}
-                        <div className="mb-8">
-                            <h1 className="text-4xl font-bold text-white">Scan History</h1>
-                            <p className="text-gray-400 mt-2">Review previous vulnerability scans</p>
-                        </div>
-
-                        {/* Stats */}
-                        <div className="grid md:grid-cols-3 gap-6 mb-8">
-                            {[
-                                { label: "Total Records",   value: history.length,                                   color: "text-white"     },
-                                { label: "Open Ports",      value: history.filter(i => i.state === "open").length,  color: "text-green-400" },
-                                { label: "Targets Scanned", value: new Set(history.map(i => i.target)).size,        color: "text-cyan-400"  },
-                            ].map(({ label, value, color }) => (
-                                <div key={label} className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-                                    <p className="text-gray-400">{label}</p>
-                                    <h2 className={`text-3xl font-bold mt-2 ${color}`}>{value}</h2>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Search */}
-                        <div className="mb-8">
-                            <input
-                                type="text"
-                                placeholder="Search by target IP or hostname..."
-                                value={search}
-                                onChange={e => setSearch(e.target.value)}
-                                className="w-full bg-white/10 border border-white/20 rounded-xl p-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                            />
-                        </div>
-
-                        {/* Loading */}
-                        {loading && (
-                            <div className="text-center text-white py-20">
-                                Loading history...
+                    <div className="hist-stats">
+                        {[
+                            { label: "Total records",    value: history.length, color: "#E2E8F0" },
+                            { label: "Targets scanned",  value: targets,        color: "#00E5FF" },
+                            { label: "Open ports",       value: openCount,      color: "#34D399" },
+                            { label: "Vulnerabilities",  value: vulnCount,      color: "#F87171" },
+                        ].map(({ label, value, color }) => (
+                            <div key={label} className="hstat">
+                                <div className="hstat-label">{label}</div>
+                                <div className="hstat-value" style={{ color }}>{value}</div>
                             </div>
-                        )}
+                        ))}
+                    </div>
 
-                        {/* Empty */}
-                        {!loading && groups.length === 0 && (
-                            <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-10 text-center">
-                                <h3 className="text-2xl font-semibold text-white">No Scan History</h3>
-                                <p className="text-gray-400 mt-3">Perform your first scan to see results here.</p>
-                            </div>
-                        )}
+                    <div className="hist-search-wrap">
+                        <span className="hist-search-icon">⌕</span>
+                        <input
+                            className="hist-search"
+                            type="text"
+                            placeholder="Filter by IP or hostname..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                        />
+                    </div>
 
-                        {/* Grouped scan cards */}
-                        <div className="space-y-6">
-                            {groups.map((group, i) => (
-                                <ScanGroup key={i} group={group} />
-                            ))}
+                    {loading && <div className="hist-loading">Loading history...</div>}
+
+                    {!loading && groups.length === 0 && (
+                        <div className="hist-empty">
+                            <h3>{search ? "No results match your filter" : "No scan history yet"}</h3>
+                            <p>{search ? "Try a different search term." : "Run your first scan to see results here."}</p>
                         </div>
+                    )}
 
+                    <div>
+                        {groups.map((group, i) => (
+                            <ScanGroup key={i} group={group} index={i} />
+                        ))}
                     </div>
                 </div>
             </div>
