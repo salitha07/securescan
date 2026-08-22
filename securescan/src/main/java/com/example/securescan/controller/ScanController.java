@@ -1,4 +1,6 @@
 package com.example.securescan.controller;
+import com.example.securescan.service.PingService;
+import com.example.securescan.model.PingResult;
 
 import com.example.securescan.entity.ScanHistory;
 import com.example.securescan.entity.User;
@@ -38,6 +40,9 @@ public class ScanController {
 
     @Autowired
     private ScanHistoryRepository scanHistoryRepository;
+
+    @Autowired
+    private PingService pingService;
 
     // ── NEW: start scan, return scanId immediately ──
     @PostMapping("/start")
@@ -81,5 +86,9 @@ public class ScanController {
         User user = userRepository.findByEmail(email);
         if (user == null) throw new RuntimeException("User not found");
         return scanHistoryRepository.findByUser(user);
+    }
+    @GetMapping("/ping")
+    public PingResult ping(@RequestParam String target) {
+        return pingService.ping(target);
     }
 }

@@ -10,6 +10,62 @@ const STEPS = [
 ];
 
 export default function ScanProgress({ scanId, onComplete }) {
+    // Adding stop scan functionality
+    const [isStopping, setIsStopping] = useState(false);
+
+    useEffect(() => {
+        if (!scanId) return;
+
+        const es = new EventSource(
+            `http://localhost:8080/scan/progress/${scanId}`
+        );
+
+        es.addEventListener("scan-progress", (e) => {
+            const event = JSON.parse(e.data);
+            setCurrent(event.status);
+            setPercent(event.progressPercent);
+            setLogs(prev => [...prev, event.message]);
+
+            if (event.status === "COMPLETED") {
+                es.close();
+                onComplete(scanId);
+            }
+            if (event.status === "FAILED") {
+                es.close();
+                setFailed(true);
+            }
+        });
+
+        es.onerror = () => {
+            es.close();
+            setFailed(true);
+        };
+
+        return () => es.close();
+    }, [scanId]);
+
+    const handleStopScan = async () => {
+        setIsStopping(true);
+        // Close connection to stop scan
+        es.close?.();
+        // Notify backend to cancel scan
+        try {
+            await fetch(`http://localhost:8080/scan/stop/${scanId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+        } catch (error) {
+            console.error("Failed to stop scan:", error);
+        }
+        setIsStopping(false);
+        onComplete?.(scanId);
+    };
+
+    // Rest of the component...
+
+
     const [current, setCurrent]   = useState("SCANNING_PORTS");
     const [percent, setPercent]   = useState(0);
     const [logs, setLogs]         = useState([]);
