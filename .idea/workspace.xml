@@ -5,7 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a6dbeade-a180-4e49-b8ad-66bb5a156213" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/caddyfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/compose.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/securescan-frontend/src/api.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/securescan/.dockerignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/securescan/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/components/PingChecker.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/components/PingChecker.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/components/ScanProgress.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/components/ScanProgress.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/pages/History.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/pages/History.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/pages/Home.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/pages/Home.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/pages/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/pages/Login.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/pages/Register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/pages/Register.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/controller/ScanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/controller/ScanController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/entity/ScanHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/entity/ScanHistory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/service/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/service/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/securescan/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,26 +55,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Spring Boot.SecurescanApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/x13/securescan&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.SecurescanApplication.executor": "Run",
+    "git-widget-placeholder": "dev-salitha",
+    "javascript.preferred.runtime.type.id": "node",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/x13/securescan",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="SecurescanApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="securescan" />
@@ -83,6 +103,7 @@
       <workItem from="1779114432188" duration="881000" />
       <workItem from="1779291890958" duration="149000" />
       <workItem from="1779292088507" duration="18000" />
+      <workItem from="1787497194985" duration="1025000" />
     </task>
     <servers />
   </component>

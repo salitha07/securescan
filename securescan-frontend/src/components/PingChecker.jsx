@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function PingChecker({ target }) {
@@ -12,11 +12,11 @@ export default function PingChecker({ target }) {
         try {
             setLoading(true);
             setResult(null);
-            const token = localStorage.getItem("token");
-            const res = await axios.get(
-                `http://localhost:8080/scan/ping?target=${target}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const res = await api.get("/scan/ping", {
+                params: {
+                    target
+                }
+            });
             setResult(res.data);
         } catch (err) {
             setResult({ reachable: false, status: "ERROR", responseTimeMs: -1 });

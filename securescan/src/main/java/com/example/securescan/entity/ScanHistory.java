@@ -1,5 +1,6 @@
 package com.example.securescan.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -40,6 +41,7 @@ public class ScanHistory {
     }
     @lombok.Setter
     @lombok.Getter
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

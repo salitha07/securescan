@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/scan")
-@CrossOrigin(origins = "http://localhost:5173")
 public class ScanController {
 
     @Autowired

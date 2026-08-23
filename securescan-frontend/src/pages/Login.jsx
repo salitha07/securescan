@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 import logo from "../assets/logo.webp";
 
 /* ── Shared animated canvas background ───────────────────────────── */
@@ -141,7 +141,10 @@ function Login() {
         e.preventDefault();
         try {
             setLoading(true);
-            const response = await axios.post("http://localhost:8080/auth/login", { email, password });
+            const response = await api.post(
+                "/auth/login",
+                { email, password }
+            );
             localStorage.setItem("token", response.data);
             setError(""); setEmail(""); setPassword("");
             navigate("/home");

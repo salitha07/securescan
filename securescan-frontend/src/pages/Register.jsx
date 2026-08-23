@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 import logo from "../assets/logo.webp";
 
 function AnimatedBg() {
@@ -113,8 +113,11 @@ function Register() {
         e.preventDefault();
         try {
             setLoading(true);
-            await axios.post("http://localhost:8080/auth/register", { name, email, password });
-            navigate("/home");
+            await api.post("/auth/register", {
+                name,
+                email,
+                password
+            });
         } catch (error) {
             console.error(error);
             alert("Registration failed — please try again.");

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 
@@ -207,10 +207,7 @@ function History() {
     useEffect(() => {
         (async () => {
             try {
-                const token = localStorage.getItem("token");
-                const res = await axios.get("http://localhost:8080/scan/history", {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const res = await api.get("/scan/history");
                 const data = res.data;
                 setHistory(Array.isArray(data) ? data : data.content ?? data.data ?? []);
             } catch (e) {
