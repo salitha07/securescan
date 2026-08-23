@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import api from "../api";
 import {Link, useNavigate} from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
@@ -136,11 +136,9 @@ function Home() {
         try {
             setLoading(true);
             setScanId(null);
-            const res = await axios.post(
-                "http://localhost:8080/scan/start",
-                { target },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const res = await api.post("/scan/start", {
+                target
+            });
             setScanId(res.data.scanId);
         } catch (error) {
             console.error(error);
@@ -151,10 +149,8 @@ function Home() {
 
     const handleScanComplete = async (completedScanId) => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get(
-                `http://localhost:8080/scan/results/${completedScanId}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+            const res = await api.get(
+                `/scan/results/${completedScanId}`
             );
             navigate("/results", { state: { results: res.data, target } });
         } catch (error) {
