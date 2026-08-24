@@ -103,6 +103,12 @@ function Navbar() {
                     >
                         History
                     </Link>
+                    <Link
+                        to="/profile"
+                        className={`ss-nav-link ${isActive("/profile") ? "active" : ""}`}
+                    >
+                        Profile
+                    </Link>
                     <button onClick={handleLogout} className="ss-nav-logout">
                         Sign out
                     </button>

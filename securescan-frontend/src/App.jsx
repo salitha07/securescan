@@ -6,6 +6,7 @@ import History from "./pages/History";
 import Register from "./pages/Register.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
+import Profile from "./pages/Profile";
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
 
                 <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                 <Route path="/register" element={<Register />} />
 
             </Routes>

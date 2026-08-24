@@ -5,27 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a6dbeade-a180-4e49-b8ad-66bb5a156213" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/caddyfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/compose.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/securescan-frontend/src/api.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/securescan/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/securescan/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/components/PingChecker.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/components/PingChecker.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/components/ScanProgress.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/components/ScanProgress.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/pages/History.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/pages/History.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/pages/Home.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/pages/Home.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/pages/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/pages/Login.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan-frontend/src/pages/Register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/securescan-frontend/src/pages/Register.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/controller/ScanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/controller/ScanController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/entity/ScanHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/entity/ScanHistory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/service/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/java/com/example/securescan/service/JwtService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/securescan/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/securescan/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,7 +83,7 @@
       <workItem from="1779114432188" duration="881000" />
       <workItem from="1779291890958" duration="149000" />
       <workItem from="1779292088507" duration="18000" />
-      <workItem from="1787497194985" duration="1025000" />
+      <workItem from="1787497194985" duration="2621000" />
     </task>
     <servers />
   </component>
