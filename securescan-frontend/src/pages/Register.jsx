@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 import logo from "../assets/logo.webp";
+import Toast from "../components/Toast";
 
 function AnimatedBg() {
     const ref = useRef(null);
@@ -107,6 +108,7 @@ function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState(null);
     const strength = getStrength(password);
 
     const handleRegister = async (e) => {
@@ -115,43 +117,65 @@ function Register() {
         try {
             setLoading(true);
 
-            // 1. Create the user account
             const registerResponse = await api.post("/auth/register", {
                 name,
                 email,
                 password
             });
 
-            // Backend currently returns HTTP 200 even when email exists
-            if (registerResponse.data !== "User registered successfully!") {
-                alert(registerResponse.data || "Registration failed");
+            if (
+                registerResponse.data !==
+                "User registered successfully!"
+            ) {
+                setToast({
+                    type: "error",
+                    title: "Registration failed",
+                    message:
+                        registerResponse.data ||
+                        "Registration failed"
+                });
+
                 return;
             }
 
-            // 2. Automatically login the new user
+            // Automatically login after registration
             const loginResponse = await api.post("/auth/login", {
                 email,
                 password
             });
 
-            // 3. Save JWT token as the user session
-            localStorage.setItem("token", loginResponse.data);
+            localStorage.setItem(
+                "token",
+                loginResponse.data
+            );
 
-            // 4. Show popup
-            alert("Registration successful! You are now logged in.");
+            setToast({
+                type: "success",
+                title: "Account created",
+                message:
+                    "You are now logged in. Opening your scanner..."
+            });
 
-            // 5. Navigate to scanner page
-            navigate("/home");
+            window.setTimeout(() => {
+                navigate("/home");
+            }, 1500);
 
         } catch (error) {
             console.error(error);
 
-            const message =
-                typeof error.response?.data === "string"
-                    ? error.response.data
-                    : error.response?.data?.message || "Registration failed. Please try again.";
+            const data = error.response?.data;
 
-            alert(message);
+            const message =
+                typeof data === "string"
+                    ? data
+                    : data?.message ||
+                    "Registration failed. Please try again.";
+
+            setToast({
+                type: "error",
+                title: "Registration failed",
+                message
+            });
         } finally {
             setLoading(false);
         }
@@ -164,6 +188,10 @@ function Register() {
         <>
             <style>{styles}</style>
             <AnimatedBg />
+            <Toast
+                toast={toast}
+                onClose={() => setToast(null)}
+            />
             <div className="auth-root">
                 <div className="auth-card">
                     <div className="auth-logo">

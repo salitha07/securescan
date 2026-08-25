@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 import logo from "../assets/logo.webp";
+import Toast from "../components/Toast";
 
 /* ── Shared animated canvas background ───────────────────────────── */
 function AnimatedBg() {
@@ -136,21 +137,52 @@ function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState(null);
 
     const handleLogin = async (e) => {
         e.preventDefault();
+
         try {
             setLoading(true);
-            const response = await api.post(
-                "/auth/login",
-                { email, password }
-            );
+            setError("");
+
+            const response = await api.post("/auth/login", {
+                email,
+                password
+            });
+
             localStorage.setItem("token", response.data);
-            setError(""); setEmail(""); setPassword("");
-            alert("Login successful");
-            navigate("/home");
+
+            setEmail("");
+            setPassword("");
+
+            setToast({
+                type: "success",
+                title: "Welcome back",
+                message: "Login successful. Opening your scanner..."
+            });
+
+            window.setTimeout(() => {
+                navigate("/home");
+            }, 1300);
+
         } catch (err) {
-            setError(err.response?.data?.error || err.response?.data?.message || "Invalid email or password");
+            const data = err.response?.data;
+
+            const message =
+                typeof data === "string"
+                    ? data
+                    : data?.error ||
+                    data?.message ||
+                    "Invalid email or password";
+
+            setError(message);
+
+            setToast({
+                type: "error",
+                title: "Sign in failed",
+                message
+            });
         } finally {
             setLoading(false);
         }
@@ -160,6 +192,10 @@ function Login() {
         <>
             <style>{styles}</style>
             <AnimatedBg />
+            <Toast
+                toast={toast}
+                onClose={() => setToast(null)}
+            />
             <div className="auth-root">
                 <div className="auth-card">
                     <div className="auth-logo">
