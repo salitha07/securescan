@@ -111,16 +111,47 @@ function Register() {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+
         try {
             setLoading(true);
-            await api.post("/auth/register", {
+
+            // 1. Create the user account
+            const registerResponse = await api.post("/auth/register", {
                 name,
                 email,
                 password
             });
+
+            // Backend currently returns HTTP 200 even when email exists
+            if (registerResponse.data !== "User registered successfully!") {
+                alert(registerResponse.data || "Registration failed");
+                return;
+            }
+
+            // 2. Automatically login the new user
+            const loginResponse = await api.post("/auth/login", {
+                email,
+                password
+            });
+
+            // 3. Save JWT token as the user session
+            localStorage.setItem("token", loginResponse.data);
+
+            // 4. Show popup
+            alert("Registration successful! You are now logged in.");
+
+            // 5. Navigate to scanner page
+            navigate("/home");
+
         } catch (error) {
             console.error(error);
-            alert("Registration failed — please try again.");
+
+            const message =
+                typeof error.response?.data === "string"
+                    ? error.response.data
+                    : error.response?.data?.message || "Registration failed. Please try again.";
+
+            alert(message);
         } finally {
             setLoading(false);
         }
@@ -177,6 +208,7 @@ function Register() {
 
                         <button type="submit" className="auth-btn-primary" disabled={loading}>
                             {loading ? "Creating account..." : "Create account"}
+
                         </button>
                     </form>
 
