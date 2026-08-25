@@ -147,6 +147,7 @@ function Login() {
             );
             localStorage.setItem("token", response.data);
             setError(""); setEmail(""); setPassword("");
+            alert("Login successful");
             navigate("/home");
         } catch (err) {
             setError(err.response?.data?.error || err.response?.data?.message || "Invalid email or password");
